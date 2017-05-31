@@ -1,10 +1,7 @@
 FROM openjdk:8
 
-RUN useradd -ms /bin/bash sonar
-USER sonar
-
 ENV SONAR_VERSION=6.3.1 \
-    SONARQUBE_HOME=/home/sonar/sonarqube \
+    SONARQUBE_HOME=/opt/sonarqube \
     # Database configuration
     # Defaults to using H2
     SONARQUBE_JDBC_USERNAME=sonar \
@@ -29,5 +26,9 @@ RUN set -x \
 
 WORKDIR $SONARQUBE_HOME
 COPY run.sh bin/
+
+RUN useradd -ms /bin/bash sonarqube
+RUN chown -R sonarqube $SONARQUBE_HOME && chgrp -R 0 $SONARQUBE_HOME && chmod -R g+rw $SONARQUBE_HOME && find $SONARQUBE_HOME -type d -exec chmod g+x {} +
+USER sonarqube
 
 ENTRYPOINT ["./bin/run.sh"]
