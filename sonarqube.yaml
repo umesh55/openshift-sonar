@@ -1,0 +1,44 @@
+kind: Template
+apiVersion: v1
+metadata:
+  name: sonar-template
+  annotations:
+    description: "Description"
+objects:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    name: sonar
+    labels:
+      sonar: 6.3.1
+  spec:
+    containers:
+    - env:
+      image: quay.io/umesh55/sonar
+      name: sonar
+      ports:
+      - containerPort: 9000
+        protocol: TCP
+      - containerPort: 9002
+        protocol: TCP
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: sonar
+    annotations:
+      description: "Exposes and load balances the application pods"
+  spec:
+    ports:
+      - name: sonar
+        port: 9000
+        targetPort: 9000
+    selector:
+      sonar: 6.3.1
+- apiVersion: v1
+  kind: Route
+  metadata:
+    name: sonar
+  spec:
+    to:
+      kind: Service
+      name: sonar
